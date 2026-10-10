@@ -10,24 +10,6 @@ const products = [
     colors: ["Hijau", "Putih", "Hitam"]
   },
   {
-    id: "sambal-botol-mpm",
-    name: "Sambal Botol MPM",
-    description: "Sambal Botol MPM merupakan sambal khas dengan perpaduan cabai, Katokkon khas Toraja, dan tuna asap yang menghasilkan cita rasa pedas, gurih, serta aroma asap yang khas. Produk ini cocok menjadi pelengkap berbagai hidangan dan menghadirkan cita rasa lokal Toraja.",
-    images: ["../assets/images/sambal mpm.jpeg"],
-    composition: [
-      "Cabai",
-      "Cabai Katokkon",
-      "Tuna asap",
-      "Bawang merah",
-      "Bawang putih",
-      "Minyak nabati",
-      "Penyedap rasa",
-      "Kemiri",
-      "Natrium benzoat (Na-benzoat)"
-    ],
-    contactOnly: true
-  },
-  {
     id: "barra-rarang",
     name: "Barra’ Rarang - Beras Merah",
     description: "Beras merah lokal Toraja dari varietas Pare Pekko. Kemasan 500 gram.",

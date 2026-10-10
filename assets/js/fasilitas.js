@@ -1,43 +1,36 @@
 const rooms = [
   {
-    id: "kamar-01",
-    name: "Kamar Asrama Reguler",
-    description: "Kamar asrama yang nyaman untuk tamu rombongan, peserta pelatihan, maupun pengunjung reguler. Dilengkapi dengan fasilitas dasar yang memadai dan sirkulasi udara yang baik.",
+    id: "kamar-keluarga",
+    name: "Kamar Tipe 1 – Kamar Keluarga",
+    description: "Pilihan kamar yang nyaman untuk keluarga atau rombongan kecil, dengan kapasitas 4–5 orang.",
     images: [
-      "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&q=80&w=800",
-      "https://ik.imagekit.io/pashouses/pandu/pages/wp-content/uploads/2023/05/Studio-Munge-Esplanade-master-bedroom.jpg",
-      "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&q=80&w=800"
+      "../assets/images/kamar/kamar1.png",
+      "../assets/images/kamar/kamar2.png"
     ],
     facilities: [
-      "Tempat tidur single",
-      "Kamar mandi luar",
-      "Kipas angin",
-      "Meja belajar",
-      "Lemari pakaian"
+      "WC duduk", "Lemari", "Kasur untuk 4–5 orang", "Meja", "Kursi",
+      "Layanan ganti handuk", "Cermin", "Wi-Fi", "Dapur"
     ],
-    capacity: 2,
+    capacity: 5,
     price: null
   },
   {
-    id: "kamar-02",
-    name: "Kamar Keluarga",
-    description: "Kamar luas yang cocok untuk keluarga yang sedang berkunjung. Memiliki kamar mandi dalam dan privasi lebih.",
+    id: "kamar-standar",
+    name: "Kamar Tipe 2 – Kamar Standar",
+    description: "Kamar praktis dan nyaman untuk kunjungan singkat atau menginap berdua, dengan kapasitas 2 orang.",
     images: [
-      "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&q=80&w=800",
-      "https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&q=80&w=800"
+      "../assets/images/kamar/kamar 3.png",
+      "../assets/images/kamar/kamar 4.png"
     ],
     facilities: [
-      "Tempat tidur queen size",
-      "Kamar mandi dalam",
-      "AC",
-      "Lemari pakaian"
+      "WC duduk", "Lemari", "Kasur untuk 2 orang", "Meja", "Kursi",
+      "Layanan ganti handuk", "Cermin", "Wi-Fi", "Dapur"
     ],
-    capacity: 4,
+    capacity: 2,
     price: null
   }
 ];
 
-const WHATSAPP_ROOM_DESTINATION = "https://chat.whatsapp.com/DNWSUa8bAtk6dj4dKf4Lnc";
 const TRAINING_ADMIN_WHATSAPP = "6281343604500";
 
 const trainingPackages = [
@@ -159,12 +152,12 @@ function renderRooms() {
     sliderState[r.id] = 0;
     
     return `
-    <div class="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden flex flex-col md:flex-row gap-6">
-      <div class="w-full md:w-1/2 relative group">
+    <article class="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden flex flex-col md:flex-row gap-6 min-w-0">
+      <div class="w-full md:w-1/2 relative group min-w-0">
         <!-- Slider Images -->
         <div class="relative w-full h-64 md:h-full overflow-hidden bg-gray-100" id="slider-${r.id}">
           ${r.images.map((img, i) => `
-            <img src="${img}" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${i === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}" data-index="${i}">
+            <img src="${img}" alt="${r.name} — foto ${i + 1}" loading="lazy" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${i === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}" data-index="${i}">
           `).join('')}
         </div>
         
@@ -186,7 +179,7 @@ function renderRooms() {
         ` : ''}
       </div>
       
-      <div class="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-center">
+      <div class="w-full md:w-1/2 min-w-0 p-6 md:p-8 flex flex-col justify-center">
         <h2 class="text-2xl font-bold text-gray-900 mb-3">${r.name}</h2>
         <p class="text-gray-600 mb-6">${r.description}</p>
         
@@ -207,7 +200,7 @@ function renderRooms() {
           </button>
         </div>
       </div>
-    </div>
+    </article>
     `;
   }).join('');
   
@@ -359,24 +352,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const name = document.getElementById('bookingName').value;
       const wa = document.getElementById('bookingWa').value;
       const guests = document.getElementById('bookingGuests').value;
-      const notes = document.getElementById('bookingNotes').value;
-      
-      let text = `Halo Admin MPM,%0A%0ASaya ingin melakukan pemesanan kamar.%0A%0A`;
-      text += `Nama: ${name}%0A`;
-      text += `Nomor WhatsApp: ${wa}%0A`;
-      text += `Kamar: ${roomName}%0A`;
-      text += `Check-in: ${checkin}%0A`;
-      text += `Check-out: ${checkout}%0A`;
-      text += `Jumlah tamu: ${guests}%0A`;
-      if (notes) text += `Catatan: ${notes}%0A`;
-      text += `%0AMohon informasi ketersediaan kamar dan proses selanjutnya.%0A%0ATerima kasih.`;
-      
-      alert('Pesan pemesanan telah di-copy ke clipboard. Lanjutkan bergabung ke grup WhatsApp untuk mem-paste pesan Anda kepada Admin.');
-      navigator.clipboard.writeText(decodeURIComponent(text)).then(() => {
-        window.open(WHATSAPP_ROOM_DESTINATION, '_blank');
-      }).catch(err => {
-        window.open(WHATSAPP_ROOM_DESTINATION, '_blank');
-      });
+      const notes = document.getElementById('bookingNotes').value.trim();
+      const message = [
+        'Halo Admin MPM, saya ingin melakukan pemesanan kamar.', '',
+        `Nama: ${name}`, `Nomor WhatsApp: ${wa}`, `Kamar: ${roomName}`,
+        `Check-in: ${checkin}`, `Check-out: ${checkout}`, `Jumlah tamu: ${guests}`,
+        ...(notes ? [`Catatan: ${notes}`] : []), '',
+        'Mohon informasi ketersediaan kamar dan proses selanjutnya. Terima kasih.'
+      ].join('\n');
+      window.open(`https://wa.me/${TRAINING_ADMIN_WHATSAPP}?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
       
       closeBooking();
     });
