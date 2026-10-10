@@ -2,7 +2,84 @@
  * Yayasan MPM - Main JavaScript File
  */
 
+const initializeScrollReveals = () => {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
+
+  const cardSelector = [
+    '.program-card',
+    '.blog-card',
+    '.partner-logo-link',
+    '.field-story-card',
+    '.meeting-package-card',
+    '.training-package-card',
+    '#product-container > *',
+    '#room-container > *',
+    '[data-blog-list] > *',
+    '[data-newsletter-list] > *',
+    '[data-newsletter-related] > *',
+    'section .grid > a.relative.group',
+    'section .grid > section.bg-white.rounded-2xl'
+  ].join(',');
+  const observed = new WeakSet();
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('is-visible');
+      observer.unobserve(entry.target);
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -32px 0px' });
+
+  const observe = (element, delay = 0, options = {}) => {
+    if (observed.has(element) || element.closest('.hero')) return;
+    observed.add(element);
+    element.classList.add('scroll-reveal-item');
+    if (options.card) element.classList.add('scroll-reveal-card');
+    if (options.image) element.classList.add('scroll-reveal-image');
+    if (delay) element.style.setProperty('--scroll-reveal-delay', `${delay}ms`);
+    observer.observe(element);
+  };
+
+  const collectTargets = root => {
+    const find = selector => {
+      const elements = [];
+      if (root.nodeType === Node.ELEMENT_NODE && root.matches(selector)) elements.push(root);
+      if (root.querySelectorAll) elements.push(...root.querySelectorAll(selector));
+      return elements;
+    };
+
+    find('section h1, section h2').forEach(heading => {
+      if (heading.closest('.hero')) return;
+      observe(heading);
+      const description = heading.nextElementSibling;
+      if (description?.tagName === 'P') observe(description, 80);
+    });
+
+    const cardParents = new Set();
+    find(cardSelector).forEach(card => cardParents.add(card.parentElement));
+    cardParents.forEach(parent => {
+      if (!parent) return;
+      [...parent.children]
+        .filter(child => child.matches(cardSelector))
+        .forEach((card, index) => observe(card, Math.min(index * 100, 400), { card: true }));
+    });
+
+    find('.about-teaser__main-image, .about-teaser__overlay-image, main article > img, [data-newsletter-cover]')
+      .forEach(image => observe(image, 100, { image: true }));
+  };
+
+  collectTargets(document);
+  const mutationObserver = new MutationObserver(records => {
+    records.forEach(record => record.addedNodes.forEach(node => {
+      if (node.nodeType === Node.ELEMENT_NODE) collectTargets(node);
+    }));
+  });
+  mutationObserver.observe(document.body, { childList: true, subtree: true });
+  document.body.classList.add('scroll-reveal-ready');
+};
+
 const initializePage = () => {
+  initializeScrollReveals();
+
   /* =========================================
      1. Sticky Header
      ========================================= */
@@ -125,7 +202,7 @@ const initializePage = () => {
      ========================================= */
   const heroSlidesData = [
     {
-      image: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse3.mm.bing.net%2Fth%2Fid%2FOIP.mea84JElLgKQzCQ1RVpsPAHaEJ%3Fr%3D0%26pid%3DApi&f=1&ipt=3c3a3136bcee9683286abdd05947bb58f80120343f282fe9ccbd895f258fb001&ipo=images",
+      image: "https://penamasmotivator.org/wp-content/uploads/2024/05/video-tumb.png.webp",
       category: "Pertanian",
       title: "Informasi & Solusi <span class='bg-clip-text text-transparent bg-gradient-to-r from-light to-white'>Budidaya Pertanian</span>",
       description: "Menyediakan informasi, pendampingan, dan solusi untuk mendukung pengembangan budidaya pertanian serta pemberdayaan masyarakat.",
@@ -133,7 +210,7 @@ const initializePage = () => {
       cta: "Lihat Kegiatan"
     },
     {
-      image: "https://images.unsplash.com/photo-1615811361523-6bd03d7748e7?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      image: "https://penamasmotivator.org/wp-content/uploads/2024/05/img-sec2.jpg.webp",
       category: "Pemberdayaan Masyarakat",
       title: "Bersama Membangun <span class='bg-clip-text text-transparent bg-gradient-to-r from-light to-white'>Perubahan Positif</span>",
       description: "Mendampingi masyarakat pedesaan di Tana Toraja untuk kemandirian ekonomi, sosial, dan ekologi berkelanjutan.",
@@ -141,7 +218,7 @@ const initializePage = () => {
       cta: "Pelajari Lebih Lanjut"
     },
     {
-      image: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse3.mm.bing.net%2Fth%2Fid%2FOIP.mea84JElLgKQzCQ1RVpsPAHaEJ%3Fr%3D0%26pid%3DApi&f=1&ipt=3c3a3136bcee9683286abdd05947bb58f80120343f282fe9ccbd895f258fb001&ipo=images",
+      image: "https://rycam.id/wp-content/uploads/2025/12/25-1200x675.png",
       category: "Pelatihan & Pengembangan",
       title: "Meningkatkan <span class='bg-clip-text text-transparent bg-gradient-to-r from-light to-white'>Kapasitas Masyarakat</span>",
       description: "Melalui pelatihan intensif, kami membekali pemuda dan petani dengan keterampilan untuk beradaptasi dan berkembang di daerah terpencil.",
@@ -149,7 +226,7 @@ const initializePage = () => {
       cta: "Lihat Program"
     },
     {
-      image: "https://images.unsplash.com/photo-1594771804886-a933bb2d609b?q=80&w=1182&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      image: "https://penamasmotivator.org/wp-content/uploads/2026/05/C7821T01-1024x576.jpg.webp",
       category: "Kegiatan MPM",
       title: "Kolaborasi untuk <span class='bg-clip-text text-transparent bg-gradient-to-r from-light to-white'>Masa Depan</span>",
       description: "Berbagai inisiatif mulai dari mitigasi perubahan iklim hingga pembangunan perdamaian bersama komunitas lokal.",

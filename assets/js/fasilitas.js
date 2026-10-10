@@ -5,7 +5,7 @@ const rooms = [
     description: "Kamar asrama yang nyaman untuk tamu rombongan, peserta pelatihan, maupun pengunjung reguler. Dilengkapi dengan fasilitas dasar yang memadai dan sirkulasi udara yang baik.",
     images: [
       "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&q=80&w=800",
-      "https://images.unsplash.com/photo-1522771731470-366336336e3c?auto=format&fit=crop&q=80&w=800",
+      "https://ik.imagekit.io/pashouses/pandu/pages/wp-content/uploads/2023/05/Studio-Munge-Esplanade-master-bedroom.jpg",
       "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&q=80&w=800"
     ],
     facilities: [
@@ -38,9 +38,118 @@ const rooms = [
 ];
 
 const WHATSAPP_ROOM_DESTINATION = "https://chat.whatsapp.com/DNWSUa8bAtk6dj4dKf4Lnc";
+const TRAINING_ADMIN_WHATSAPP = "6281343604500";
+
+const trainingPackages = [
+  {
+    name: "Dasar Pertanian Organik",
+    description: "Mengenal prinsip dan praktik awal pertanian organik.",
+    image: "https://rycam.id/wp-content/uploads/2025/12/MPM2285-scaled.jpg",
+    price: "Hubungi admin untuk harga",
+    duration: "Durasi menyesuaikan program",
+    instructor: "Pemateri dari MPM",
+    materials: ["Prinsip pertanian organik", "Kesehatan tanah", "Pengolahan lahan", "Pengenalan pupuk organik"]
+  },
+  {
+    name: "Pembuatan Pupuk Organik",
+    description: "Belajar mengolah bahan organik menjadi pupuk untuk tanaman.",
+    image: "https://rycam.id/wp-content/uploads/2025/07/Foto-6_SMK-Negeri-8-Konawe-Selatan_Perawatan-tanaman-1200x900.jpg",
+    price: "Hubungi admin untuk harga",
+    duration: "Durasi menyesuaikan program",
+    instructor: "Pemateri dari MPM",
+    materials: ["Pengenalan bahan organik", "Pembuatan kompos", "Pengolahan pupuk", "Cara penggunaan pada tanaman"]
+  },
+  {
+    name: "Budidaya Tanaman Berkelanjutan",
+    description: "Mempelajari tahapan budidaya tanaman yang berkelanjutan.",
+    image: "https://rycam.id/wp-content/uploads/2025/12/WhatsApp-Image-2025-10-29-at-12.30.24_0526b716-1200x900.jpg",
+    price: "Hubungi admin untuk harga",
+    duration: "Durasi menyesuaikan program",
+    instructor: "Pemateri dari MPM",
+    materials: ["Pemilihan benih", "Persemaian", "Perawatan tanaman", "Pengendalian hama terpadu", "Pemeliharaan lahan"]
+  },
+  {
+    name: "Praktik Pertanian dan Pascapanen",
+    description: "Praktik lapangan dari pemeliharaan hingga penanganan panen.",
+    image: "https://rycam.id/wp-content/uploads/2025/07/B1-scaled.jpg",
+    price: "Hubungi admin untuk harga",
+    duration: "Durasi menyesuaikan program",
+    instructor: "Pemateri dari MPM",
+    materials: ["Praktik lapangan", "Pemeliharaan tanaman", "Waktu panen", "Penanganan hasil panen", "Evaluasi hasil budidaya"]
+  }
+];
 
 // State for sliders
 const sliderState = {};
+
+function renderTrainingPackages() {
+  const track = document.getElementById('training-package-track');
+  if (!track) return;
+
+  track.innerHTML = trainingPackages.map(trainingPackage => {
+    const message = `Halo Admin MPM, saya ingin bertanya tentang Paket ${trainingPackage.name}.`;
+    const whatsappUrl = `https://wa.me/${TRAINING_ADMIN_WHATSAPP}?text=${encodeURIComponent(message)}`;
+
+    return `
+      <article class="training-package-card">
+        <div class="training-package-image">
+          <img src="${trainingPackage.image}" alt="Kegiatan ${trainingPackage.name}" loading="lazy">
+          <div class="training-package-image-fallback" hidden>Foto kegiatan belum dapat dimuat</div>
+        </div>
+        <div class="training-package-content">
+          <h3>${trainingPackage.name}</h3>
+          <p class="training-package-description">${trainingPackage.description}</p>
+          <dl class="training-package-details">
+            <div><dt>Harga</dt><dd>${trainingPackage.price}</dd></div>
+            <div><dt>Durasi</dt><dd>${trainingPackage.duration}</dd></div>
+            <div><dt>Pemateri</dt><dd>${trainingPackage.instructor}</dd></div>
+          </dl>
+          <div class="training-package-materials">
+            <h4>Materi yang dipelajari</h4>
+            <ul>${trainingPackage.materials.map(material => `<li>${material}</li>`).join('')}</ul>
+          </div>
+          <a class="training-package-cta" href="${whatsappUrl}" target="_blank" rel="noopener noreferrer">Hubungi Admin via WhatsApp</a>
+        </div>
+      </article>
+    `;
+  }).join('');
+
+  track.querySelectorAll('.training-package-image img').forEach(image => {
+    image.addEventListener('error', () => {
+      image.hidden = true;
+      image.nextElementSibling.hidden = false;
+    }, { once: true });
+  });
+}
+
+function initTrainingCarousel() {
+  const track = document.getElementById('training-package-track');
+  const carousel = document.getElementById('training-package-carousel');
+  const previousButton = document.getElementById('training-packages-prev');
+  const nextButton = document.getElementById('training-packages-next');
+  if (!track || !carousel || !previousButton || !nextButton) return;
+
+  const updateControls = () => {
+    const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+    previousButton.disabled = carousel.scrollLeft <= 1;
+    nextButton.disabled = carousel.scrollLeft >= maxScroll - 1;
+  };
+  const scrollByCard = direction => {
+    const card = track.querySelector('.training-package-card');
+    if (!card) return;
+    const gap = Number.parseFloat(getComputedStyle(track).columnGap) || 0;
+    carousel.scrollBy({
+      left: direction * (card.getBoundingClientRect().width + gap),
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+    });
+  };
+
+  previousButton.addEventListener('click', () => scrollByCard(-1));
+  nextButton.addEventListener('click', () => scrollByCard(1));
+  carousel.addEventListener('scroll', updateControls, { passive: true });
+  window.addEventListener('resize', updateControls);
+  updateControls();
+}
 
 function renderRooms() {
   const container = document.getElementById('room-container');
@@ -212,6 +321,8 @@ function closeBooking() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  renderTrainingPackages();
+  initTrainingCarousel();
   renderRooms();
   
   const closeBtn = document.getElementById('closeBookingBtn');

@@ -265,6 +265,17 @@ const server = createServer(async (request, response) => {
   }
 });
 
+server.on('error', (error) => {
+  if (error.code === 'EADDRINUSE') {
+    console.error(`Port ${port} sedang digunakan. Periksa proses yang memakai port tersebut atau tentukan PORT lain.`);
+    process.exitCode = 1;
+    return;
+  }
+
+  console.error('Server gagal dijalankan:', error);
+  process.exitCode = 1;
+});
+
 server.listen(port, () => {
   console.log(`MPM blog server listening at http://localhost:${port}`);
   console.log(`SQLite database: ${databasePath}`);

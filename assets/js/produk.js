@@ -1,19 +1,79 @@
+
 const products = [
   {
     id: "kaos-mpm-hijau",
     name: "Kaos MPM Edisi Hijau",
     description: "Kaos berbahan katun berkualitas dengan logo Motivator Pembangunan Masyarakat. Nyaman dipakai untuk kegiatan lapangan maupun sehari-hari.",
     price: 150000,
-    images: ["https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=600"],
+    images: ["../assets/images/baju mpm.jpeg"],
     sizes: ["S", "M", "L", "XL", "XXL"],
     colors: ["Hijau", "Putih", "Hitam"]
   },
   {
     id: "sambal-botol-mpm",
     name: "Sambal Botol MPM",
-    description: "Sambal siap santap dalam kemasan botol. Hubungi admin untuk informasi varian, ukuran, harga, dan ketersediaan.",
-    images: ["../assets/images/sambal-botol.svg"],
+    description: "Sambal Botol MPM merupakan sambal khas dengan perpaduan cabai, Katokkon khas Toraja, dan tuna asap yang menghasilkan cita rasa pedas, gurih, serta aroma asap yang khas. Produk ini cocok menjadi pelengkap berbagai hidangan dan menghadirkan cita rasa lokal Toraja.",
+    images: ["../assets/images/sambal mpm.jpeg"],
+    composition: [
+      "Cabai",
+      "Cabai Katokkon",
+      "Tuna asap",
+      "Bawang merah",
+      "Bawang putih",
+      "Minyak nabati",
+      "Penyedap rasa",
+      "Kemiri",
+      "Natrium benzoat (Na-benzoat)"
+    ],
     contactOnly: true
+  },
+  {
+    id: "barra-rarang",
+    name: "Barra’ Rarang - Beras Merah",
+    description: "Beras merah lokal Toraja dari varietas Pare Pekko. Kemasan 500 gram.",
+    images: [
+      "../assets/images/Produk/Barra%E2%80%99%20Rarang%20Red%20Rice%20Pouch%201.webp",
+      "../assets/images/Produk/Barra%E2%80%99%20Rarang%20Red%20Rice%20Pouch%202.png",
+      "../assets/images/Produk/Barra%E2%80%99%20Rarang%20Red%20Rice%20Pouch%203.png",
+      "../assets/images/Produk/Barra%E2%80%99%20Rarang%20Red%20Rice%20Pouch%204.png"
+    ],
+    price: 20000
+  },
+  {
+    id: "barra-lotong",
+    name: "Barra’ Lotong - Beras Hitam",
+    description: "Beras hitam lokal Toraja dari varietas Pare Ambo. Kemasan 500 gram.",
+    images: [
+      "../assets/images/Produk/Kraft%20Pouch%20of%20Black%20Rice%201.webp",
+      "../assets/images/Produk/Kraft%20Pouch%20of%20Black%20Rice%202.png",
+      "../assets/images/Produk/Kraft%20Pouch%20of%20Black%20Rice%203.png",
+      "../assets/images/Produk/Kraft%20Pouch%20of%20Black%20Rice%204.png"
+    ],
+    price: 20000
+  },
+  {
+    id: "kawa-mamming",
+    name: "Kawa Mamming - Kopi Robusta Toraja",
+    description: "Kopi robusta Toraja yang dibudidayakan tanpa perlakuan kimia sintetis.",
+    images: [
+      "../assets/images/Produk/Kawa%20Mamming%20Toraja%20Coffee%20Pouch%201.webp",
+      "../assets/images/Produk/Kawa%20Mamming%20Toraja%20Coffee%20Pouch%202.png",
+      "../assets/images/Produk/Kawa%20Mamming%20Toraja%20Coffee%20Pouch%203.png",
+      "../assets/images/Produk/Kawa%20Mamming%20Toraja%20Coffee%20Pouch%204.png"
+    ],
+    price: 20000
+  },
+  {
+    id: "sambalado-katokkon-tuna",
+    name: "Sambalado - Sambal Katokkon Tuna",
+    description: "Sambal lada Katokkon khas Toraja dengan varian ikan tuna. Kemasan 200 gram.",
+    images: [
+      "../assets/images/Produk/Sambalado%20Toraja%20Chili%20Jar%201.webp",
+      "../assets/images/Produk/Sambalado%20Toraja%20Chili%20Jar%202.png",
+      "../assets/images/Produk/Sambalado%20Toraja%20Chili%20Jar%203.png",
+      "../assets/images/Produk/Sambalado%20Toraja%20Chili%20Jar%204.png"
+    ],
+    price: 20000
   }
 ];
 
@@ -22,6 +82,36 @@ let cart = JSON.parse(localStorage.getItem('mpm_cart')) || [];
 
 function formatRupiah(number) {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
+}
+
+function renderProductGallery(product) {
+  const imageCount = product.images.length;
+  return `
+    <div class="product-gallery" data-product-gallery="${product.id}" data-image-index="0">
+      <img src="${product.images[0]}" alt="${product.name}" class="product-gallery__image" loading="lazy">
+      ${imageCount > 1 ? `
+        <button type="button" class="product-gallery__nav product-gallery__nav--previous" data-gallery-step="-1" aria-label="Foto sebelumnya: ${product.name}">&lsaquo;</button>
+        <span class="product-gallery__count" aria-live="polite">1 / ${imageCount}</span>
+        <button type="button" class="product-gallery__nav product-gallery__nav--next" data-gallery-step="1" aria-label="Foto berikutnya: ${product.name}">&rsaquo;</button>
+      ` : ''}
+    </div>
+  `;
+}
+
+function showProductGalleryImage(gallery, step) {
+  const product = products.find(item => item.id === gallery.dataset.productGallery);
+  if (!product) return;
+
+  const currentIndex = Number(gallery.dataset.imageIndex);
+  const nextIndex = (currentIndex + step + product.images.length) % product.images.length;
+  const image = gallery.querySelector('.product-gallery__image');
+  const counter = gallery.querySelector('.product-gallery__count');
+  if (!image || !counter) return;
+
+  gallery.dataset.imageIndex = String(nextIndex);
+  image.src = product.images[nextIndex];
+  image.alt = `${product.name}, foto ${nextIndex + 1} dari ${product.images.length}`;
+  counter.textContent = `${nextIndex + 1} / ${product.images.length}`;
 }
 
 function renderProducts() {
@@ -33,12 +123,20 @@ function renderProducts() {
       const message = encodeURIComponent(`Halo Admin MPM, saya tertarik dengan ${p.name}. Mohon informasi varian, ukuran, harga, dan ketersediaannya.`);
       return `
         <div class="bg-white rounded-2xl shadow border border-gray-100 overflow-hidden flex flex-col">
-          <img src="${p.images[0]}" alt="Ilustrasi produk ${p.name}" class="w-full h-64 object-cover">
+          ${renderProductGallery(p)}
           <div class="p-6 flex flex-col flex-grow">
             <h3 class="text-xl font-bold text-gray-900 mb-2">${p.name}</h3>
-            <p class="text-gray-600 text-sm mb-6 flex-grow">${p.description}</p>
-            <a href="https://wa.me/6281342707988?text=${message}" target="_blank" rel="noopener noreferrer" class="btn btn-outline w-full justify-center flex items-center gap-2">
-              Tanya dan pesan via WhatsApp
+            <p class="text-gray-600 text-sm mb-4">${p.description}</p>
+            ${p.composition ? `
+              <div class="mb-6 rounded-xl border border-primary/10 bg-light p-4">
+                <h4 class="mb-2 text-sm font-bold text-primary">Komposisi</h4>
+                <ul class="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs text-gray-700 sm:text-sm">
+                  ${p.composition.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+              </div>
+            ` : ''}
+            <a href="https://wa.me/6281343604500?text=${message}" target="_blank" rel="noopener noreferrer" class="btn btn-outline w-full justify-center flex items-center gap-2 mt-auto">
+              Tanya harga dan pesan via WhatsApp
             </a>
           </div>
         </div>
@@ -47,25 +145,29 @@ function renderProducts() {
 
     return `
       <div class="bg-white rounded-2xl shadow border border-gray-100 overflow-hidden flex flex-col">
-        <img src="${p.images[0]}" alt="${p.name}" class="w-full h-64 object-cover">
+        ${renderProductGallery(p)}
         <div class="p-6 flex flex-col flex-grow">
           <h3 class="text-xl font-bold text-gray-900 mb-2">${p.name}</h3>
           <p class="text-gray-600 text-sm mb-4 flex-grow">${p.description}</p>
           <div class="text-primary font-bold text-xl mb-4">${formatRupiah(p.price)}</div>
           
           <div class="space-y-3 mb-6">
-            <div>
-              <label class="block text-sm text-gray-700 mb-1">Ukuran</label>
-              <select id="size-${p.id}" class="w-full border border-gray-300 rounded px-3 py-2 outline-none focus:border-primary">
-                ${p.sizes.map(s => `<option value="${s}">${s}</option>`).join('')}
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm text-gray-700 mb-1">Warna</label>
-              <select id="color-${p.id}" class="w-full border border-gray-300 rounded px-3 py-2 outline-none focus:border-primary">
-                ${p.colors.map(c => `<option value="${c}">${c}</option>`).join('')}
-              </select>
-            </div>
+            ${p.sizes?.length ? `
+              <div>
+                <label class="block text-sm text-gray-700 mb-1">Ukuran</label>
+                <select id="size-${p.id}" class="w-full border border-gray-300 rounded px-3 py-2 outline-none focus:border-primary">
+                  ${p.sizes.map(s => `<option value="${s}">${s}</option>`).join('')}
+                </select>
+              </div>
+            ` : ''}
+            ${p.colors?.length ? `
+              <div>
+                <label class="block text-sm text-gray-700 mb-1">Warna</label>
+                <select id="color-${p.id}" class="w-full border border-gray-300 rounded px-3 py-2 outline-none focus:border-primary">
+                  ${p.colors.map(c => `<option value="${c}">${c}</option>`).join('')}
+                </select>
+              </div>
+            ` : ''}
             <div>
               <label class="block text-sm text-gray-700 mb-1">Jumlah</label>
               <div class="flex items-center border border-gray-300 rounded w-max">
@@ -96,9 +198,9 @@ window.updateQtyInput = function(id, change) {
 window.addToCart = function(id) {
   const p = products.find(x => x.id === id);
   if(!p) return;
-  const size = document.getElementById(`size-${id}`).value;
-  const color = document.getElementById(`color-${id}`).value;
-  const qty = parseInt(document.getElementById(`qty-${id}`).value) || 1;
+  const size = document.getElementById(`size-${id}`)?.value || '';
+  const color = document.getElementById(`color-${id}`)?.value || '';
+  const qty = Math.max(1, parseInt(document.getElementById(`qty-${id}`)?.value, 10) || 1);
   
   const existing = cart.find(x => x.id === id && x.size === size && x.color === color);
   if (existing) {
@@ -148,7 +250,7 @@ function renderCartItems() {
       <div class="flex gap-4 border-b border-gray-100 pb-4">
         <div class="flex-grow">
           <h4 class="font-bold text-gray-900">${item.name}</h4>
-          <p class="text-sm text-gray-500">Ukuran: ${item.size} | Warna: ${item.color}</p>
+          ${item.size || item.color ? `<p class="text-sm text-gray-500">${[item.size && `Ukuran: ${item.size}`, item.color && `Warna: ${item.color}`].filter(Boolean).join(' | ')}</p>` : ''}
           <div class="flex items-center gap-4 mt-2">
              <div class="flex items-center border border-gray-300 rounded overflow-hidden">
                 <button onclick="updateCartQty(${index}, -1)" class="px-2 bg-gray-50 hover:bg-gray-200 text-gray-600">-</button>
@@ -213,6 +315,16 @@ function closeCart() {
 const initializeProducts = () => {
   renderProducts();
   updateCartBadge();
+
+  const productContainer = document.getElementById('product-container');
+  productContainer?.addEventListener('click', event => {
+    if (!(event.target instanceof Element)) return;
+    const button = event.target.closest('[data-gallery-step]');
+    const gallery = button?.closest('[data-product-gallery]');
+    if (button && gallery) {
+      showProductGalleryImage(gallery, Number(button.dataset.galleryStep));
+    }
+  });
   
   const closeBtn = document.getElementById('closeCartBtn');
   if(closeBtn) closeBtn.addEventListener('click', closeCart);
@@ -239,8 +351,8 @@ const initializeProducts = () => {
         const sub = item.price * item.qty;
         total += sub;
         text += `${i+1}. ${item.name}%0A`;
-        text += `   Ukuran: ${item.size}%0A`;
-        text += `   Warna: ${item.color}%0A`;
+        if (item.size) text += `   Ukuran: ${item.size}%0A`;
+        if (item.color) text += `   Warna: ${item.color}%0A`;
         text += `   Jumlah: ${item.qty}%0A`;
         text += `   Harga: ${formatRupiah(item.price)}%0A`;
         text += `   Subtotal: ${formatRupiah(sub)}%0A%0A`;

@@ -27,6 +27,10 @@
         }
       });
 
+      template.content.querySelectorAll('[data-site-logo]').forEach(image => {
+        image.src = new URL('assets/images/logo mpm.webp', siteRoot).href;
+      });
+
       template.content.querySelectorAll('form[data-site-search]').forEach(form => {
         form.action = new URL('pages/search.html', siteRoot).href;
       });
